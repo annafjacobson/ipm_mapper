@@ -14,7 +14,7 @@ source("color_functions.r")
 # Relevant filenames / variable definitions
 #
 csv_fn = "aggregations_current.csv"
-case_name = "heavy_aggregation"
+case_name = "21_region"
 
 #
 # Code execution
@@ -51,10 +51,12 @@ if (!file.exists(out_dir)) {
   dir.create(out_dir)
 }
 
+# Setup plot parameters
 png(file.path(out_dir, paste(case_name, ".png")))
+par(mar=c(0,0,0,0))
 
 # Create map
-plot(shp, col = shp@data$color)
+plot(shp, col = shp@data$color, border = NA, height = 200, width = 300)
 
 dev.off()
 
