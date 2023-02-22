@@ -131,6 +131,10 @@ average_all_colors <- function(colors, region_data) {
   }
 
   # Threshold for calling colors "too similar"
+  # Two passes of differentiation for fuller comparisons
+  threshold = 64 / regions + 40
+  colors_ret = differentiate_palette(colors_ret, threshold)
+  
   threshold = 64 / regions + 25
   colors_ret = differentiate_palette(colors_ret, threshold)
 
