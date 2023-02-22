@@ -10,6 +10,9 @@ library(colorspace)
 # Functions for defining map colors
 source("color_functions.r")
 
+# Functions for cleaning data
+source("region_data_functions.r")
+
 #
 # Relevant filenames / variable definitions
 #
@@ -24,22 +27,18 @@ shp <- readOGR(
 )
 
 colors <- get_palette(dim(shp@data)[1])
+
 region_data <- read.csv(file.path(getwd(), csv_fn))
+region_data <- make_regions_sequential(region_data)
+
+aggregated_colors = average_all_colors(colors, region_data)
 
 shp@data <- shp@data %>% mutate(color = rgb(0,1,0))
 
 for (i in 1:length(colors)) {
-  regs = which(region_data$Region_Agg_ID == region_data$Region_Agg_ID[i])
 
-  cols = colors[regs]
+  shp@data$color[i] = aggregated_colors[region_data$Region_Agg_ID[i]]
 
-  r = get_mean_r(cols) / 255
-  g = get_mean_g(cols) / 255
-  b = get_mean_b(cols) / 255
-
-  col = rgb(r,g,b)
-  
-  shp@data$color[i] = cols[1]
 }
 
 #

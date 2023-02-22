@@ -59,3 +59,80 @@ get_mean_b <- function(cols) {
   
   return(mean_blue)
 }
+
+# Push colors in a palette further apart, for visibility
+differentiate_palette <- function(cols, threshold) {
+
+  for (c in 1:length(cols)) {
+
+    r = col2rgb(cols[c])[1]
+    g = col2rgb(cols[c])[2]
+    b = col2rgb(cols[c])[3]
+
+    for (i in (c+1):length(cols)) {
+      r_test = col2rgb(cols[i])[1]
+      g_test = col2rgb(cols[i])[2]
+      b_test = col2rgb(cols[i])[3]
+
+      # Euclidean distance between the two colors
+      color_distance = sqrt((r - r_test)^2 + (g - g_test)^2 + (b - b_test)^2)
+      if (color_distance < threshold) {
+
+        if (r < r_test) {
+          r = r - threshold
+        } else {
+          r = r + threshold
+        }
+
+        if (g < g_test) {
+          g = g - threshold
+        } else {
+          g = g + threshold
+        }
+
+        if (b < b_test) {
+          b = b - threshold
+        } else {
+          b = b + threshold
+        }
+      
+        # Normalize into range [0,1]
+        r = min(r / 255, 1)
+        g = min(g / 255, 1)
+        b = min(b / 255, 1)
+
+        r = max(r, 0)
+        g = max(g, 0)
+        b = max(b, 0)
+
+        cols[c] = rgb(r, g, b)
+      }
+    }
+  }
+
+  return(cols)
+}
+
+average_all_colors <- function(colors, region_data) {
+
+  regions = max(region_data$Region_Agg_ID)
+  colors_ret = rep(rgb(0,0,0), regions)
+
+  for (i in 1:regions) {
+    regs = which(region_data$Region_Agg_ID == i)
+
+    cols = colors[regs]
+
+    r = get_mean_r(cols) / 255
+    g = get_mean_g(cols) / 255
+    b = get_mean_b(cols) / 255
+
+    colors_ret[i] = rgb(r,g,b)
+  }
+
+  # Threshold for calling colors "too similar"
+  threshold = 64 / regions + 25
+  colors_ret = differentiate_palette(colors_ret, threshold)
+
+  return(colors_ret)
+}
