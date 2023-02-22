@@ -17,7 +17,7 @@ source("region_data_functions.r")
 # Relevant filenames / variable definitions
 #
 csv_fn = "aggregations_current.csv"
-case_name = "21_region"
+case_name = "26_region"
 
 #
 # Code execution
