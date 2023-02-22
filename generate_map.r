@@ -51,7 +51,7 @@ if (!file.exists(out_dir)) {
   dir.create(out_dir)
 }
 
-png(file.path(out_dir, paste(case_name, ".png")), res = 120)
+png(file.path(out_dir, paste(case_name, ".png")))
 
 # Create map
 plot(shp, col = shp@data$color)
