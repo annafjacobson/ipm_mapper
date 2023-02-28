@@ -4,6 +4,7 @@
 library(rgdal)
 library(ggplot2)
 library(sp)
+library(sf)
 library(dplyr)
 library(colorspace)
 
@@ -17,7 +18,9 @@ source("region_data_functions.r")
 # Relevant filenames / variable definitions
 #
 csv_fn = "aggregations_current.csv"
-case_name = "26_region"
+case_name = "3_region_test"
+
+special = {"FRCC"}
 
 #
 # Code execution
@@ -25,6 +28,9 @@ case_name = "26_region"
 shp <- readOGR( 
   dsn= file.path(getwd(),"/Shapefiles/IPM_Regions_201770405.shp")
 )
+
+# Centroids
+points = st_point_on_surface(st_as_sf(shp))
 
 colors <- get_palette(dim(shp@data)[1])
 
@@ -56,6 +62,16 @@ par(mar=c(0,0,0,0))
 
 # Create map
 plot(shp, col = shp@data$color, border = NA, height = 200, width = 300)
+
+# Plot centroid dot for regions in "special"
+for (i in 1:length(colors)) {
+
+  if (shp@data$IPM_Region[i] %in% special) {
+    print(paste("Plotting a centroid for", shp@data$IPM_Region[i]))
+    plot(points$geometry[i], add = TRUE, pch = 21, col = "black", bg = "white")
+  }
+
+}
 
 dev.off()
 
