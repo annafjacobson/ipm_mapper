@@ -115,10 +115,11 @@ differentiate_palette <- function(cols, threshold) {
 
 average_all_colors <- function(colors, region_data) {
 
-  regions = max(region_data$Region_Agg_ID)
-  colors_ret = rep(rgb(0,0,0), regions)
+  num_regions = max(region_data$Region_Agg_ID)
+  colors_ret = rep(rgb(0,0,0), num_regions)
+  names_ret = rep("", num_regions)
 
-  for (i in 1:regions) {
+  for (i in 1:num_regions) {
     regs = which(region_data$Region_Agg_ID == i)
 
     cols = colors[regs]
@@ -128,15 +129,18 @@ average_all_colors <- function(colors, region_data) {
     b = get_mean_b(cols) / 255
 
     colors_ret[i] = rgb(r,g,b)
+    names_ret[i] = region_data$Region_name[which(region_data$Region_Agg_ID == i)[1]]
   }
 
   # Threshold for calling colors "too similar"
   # Two passes of differentiation for fuller comparisons
-  threshold = 64 / regions + 40
+  threshold = 64 / num_regions + 40
   colors_ret = differentiate_palette(colors_ret, threshold)
   
-  threshold = 64 / regions + 25
+  threshold = 64 / num_regions + 25
   colors_ret = differentiate_palette(colors_ret, threshold)
 
-  return(colors_ret)
+  ret_df = data.frame(colors = colors_ret, names = names_ret, ids = 1:num_regions)
+
+  return(ret_df)
 }
